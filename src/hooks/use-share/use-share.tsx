@@ -1,19 +1,27 @@
 import { useCallback, useMemo } from "react"
 import { ShareConfig, SOCIAL_PROVIDERS, SocialProvider } from "./social-providers"
+import { useClipboard } from "../use-clipboard"
+import { Link2 } from "lucide-react"
 
 type UseShareProps = ShareConfig & {
     clipboardTimeout?: number
 }
 
-export function useShare({ url, title, text, clipboardTimeout }: UseShareProps) {
+export function useShare({ url, title, text, clipboardTimeout = 2000 }: UseShareProps) {
+    const { isCopied, handleCopy } = useClipboard({ timeout: clipboardTimeout });
+
     const shareConfig = useMemo(() => ({
         url, // certeza que existe
         ...(title && { title }), // se title existe, add ele aqui
         ...(text && { text }) // se text existe, add ele aqui
     }), [text, title, url])
 
-    const share = useCallback((provider: SocialProvider) => {
+    const share = useCallback(async (provider: SocialProvider) => {
         try {
+            if (provider === 'clipboard') {
+                return await handleCopy(url)
+            }
+
             const providerConfig = SOCIAL_PROVIDERS[provider];
             if (!providerConfig) {
                 throw new Error(`Provider não suportado: ${provider}`)
@@ -27,7 +35,7 @@ export function useShare({ url, title, text, clipboardTimeout }: UseShareProps) 
             console.error(error);
             return false;
         }
-    }, [shareConfig])
+    }, [shareConfig, handleCopy, url])
 
     const shareButtons = useMemo(
         () => [
@@ -37,8 +45,13 @@ export function useShare({ url, title, text, clipboardTimeout }: UseShareProps) 
                 icon: provider.icon,
                 action: () => share(key as SocialProvider),
             })),
-        ],
-        [share]
+            {
+                provider: 'clipboard',
+                name: isCopied ? 'Link Copiado' : 'Copiar Link',
+                icon: <Link2 className="h-4 w-4" />,
+                action: () => share('clipboard')
+            }
+        ], [isCopied, share]
     );
 
     return { shareButtons }
