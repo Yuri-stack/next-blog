@@ -3,10 +3,14 @@ import { useRouter } from "next/router";
 import { PostCard } from "./components/post-card";
 import { PostGridCard } from "./components/post-grid-card";
 import { Inbox } from "lucide-react";
-import { posts } from "posts/posts";
+import { PostsType } from "posts/posts";
 // import { allPosts } from "contentlayer/generated";
 
-export function BlogList() {
+export type BlogListProps = {
+    posts: PostsType[];
+};
+
+export function BlogList({ posts }: BlogListProps) {
     const router = useRouter();
     const query = (router.query.q as string ?? ''); // indicando que pode ser uma string ou ''
 
