@@ -1,11 +1,12 @@
 import { cn } from "@/lib/utils";
 import { CircleX, SearchIcon } from "lucide-react";
-import { useRouter } from "next/router"
+import { useRouter, useSearchParams } from "next/navigation"
 import React, { useCallback } from "react"
 
 export function Search() {
     const router = useRouter();
-    const query = (router.query.q as string ?? ''); // indicando que pode ser uma string ou ''
+    const searchParams = useSearchParams();
+    const query = searchParams?.get('q') ?? ''; // indicando que pode ser uma string ou ''
 
     // caso o usuário precione enter no form
     const handleSearch = useCallback((event: React.FormEvent) => {
@@ -19,14 +20,11 @@ export function Search() {
     const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const newQuery = event.target.value;
 
-        router.push(`/blog?q=${encodeURIComponent(newQuery)}`, undefined, {
-            shallow: true,
-            scroll: false
-        })
+        router.push(`/blog?q=${encodeURIComponent(newQuery)}`, { scroll: false })
     }
 
     const resetSearch = () => {
-        router.push('/blog', undefined, { shallow: true, scroll: false });
+        router.push('/blog', { scroll: false });
     }
 
     return (

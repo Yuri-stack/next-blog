@@ -1,18 +1,19 @@
+'use client';
+
 import { Search } from "@/components/search";
-import { useRouter } from "next/router";
 import { PostCard } from "./components/post-card";
 import { PostGridCard } from "./components/post-grid-card";
 import { Inbox } from "lucide-react";
 import { PostsType } from "posts/posts";
-// import { allPosts } from "contentlayer/generated";
+import { useSearchParams } from "next/navigation";
 
 export type BlogListProps = {
     posts: PostsType[];
 };
 
 export function BlogList({ posts }: BlogListProps) {
-    const router = useRouter();
-    const query = (router.query.q as string ?? ''); // indicando que pode ser uma string ou ''
+    const searchParams = useSearchParams();
+    const query = searchParams?.get('q') ?? ''; // indicando que pode ser uma string ou ''
 
     const pageTitle = query
         ? `Resultados de busca para: "${query}"`
