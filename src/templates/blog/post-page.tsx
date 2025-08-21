@@ -9,11 +9,10 @@ import {
     BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 
-import { posts, PostsType } from 'posts/posts';
+import { PostsType } from 'posts/posts';
 import { Avatar } from '@/components/avatar';
 import { Markdown } from '@/components/markdown';
-import { Button } from '@/components/ui/button';
-import { useShare } from '@/hooks';
+import { PostShare } from './components/post-share';
 
 export type PostPageProps = {
     post: PostsType;
@@ -24,11 +23,7 @@ export function PostPage({ post }: PostPageProps) {
 
     const postUrl = `https://site.set/blog/${post.slug}`;
 
-    const { shareButtons } = useShare({
-        url: postUrl,
-        title: post?.title,
-        text: post?.description,
-    });
+
 
     return (
         <main className="py-20 text-gray-100">
@@ -82,32 +77,13 @@ export function PostPage({ post }: PostPageProps) {
                         <div className="prose prose-invert max-w-none px-4 mt-12 md:px-6 lg:px-12">
                             <Markdown content={post?.body} />
                         </div>
-
                     </article>
 
-                    <aside className="space-y-6">
-                        <div className="rounded-lg bg-gray-700">
-                            <h2 className="hidden md:block mb-4 text-heading-xs text-gray-100">
-                                Compartilhar
-                            </h2>
+                    <PostShare
+                        url={postUrl}
+                        title={post.title}
+                        description={post.description} />
 
-                            <div className="flex justify-between md:flex-col gap-2">
-                                {shareButtons.map((provider) => (
-                                    <Button
-                                        key={provider.provider}
-                                        onClick={() => provider.action()}
-                                        variant="outline"
-                                        className="w-fit md:w-full justify-start gap-2"
-                                    >
-                                        {provider.icon}
-                                        <span className='hidden md:block'>
-                                            {provider.name}
-                                        </span>
-                                    </Button>
-                                ))}
-                            </div>
-                        </div>
-                    </aside>
                 </div>
             </div>{' '}
         </main>
